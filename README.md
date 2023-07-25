@@ -9,7 +9,7 @@ new postForm({
     formData: [ // form inputs
         {
             name: 'input name e.g. name from <input type="email" name="email">',
-            validate: 'optional, e.g. required|email',
+            validate: 'optional, e.g. required|email', // validations: required, string, email, number
             validate_message: { // optional, default: validator message
                 required: 'input is required',
                 email: 'input must be a valid email'
