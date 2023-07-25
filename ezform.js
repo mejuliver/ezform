@@ -157,7 +157,13 @@ function postForm(ops)
                 let items = data.formData;
 
                 Object.keys(items).forEach(item=>{
-                    formData.append(item,items[item]);
+                    let item_data = items[item];
+
+                    if( _this.ops.formData[item].getAttribute('type') == 'file' && _this.ops.formData[item].files.length > 0 ){
+                        item_data = _this.ops.formData[item].files[0];
+                    }
+                    
+                    formData.append(item,item_data);
                 });
 
                 fetch(data.url,{
