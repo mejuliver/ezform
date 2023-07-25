@@ -1,0 +1,83 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Ezform</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap-grid.min.css">
+
+    <style>
+        section{
+            padding-top: 32px;
+            padding-bottom: 32px;
+        }
+        .h100vh{
+            height: 100vh;
+        }
+        fieldset{
+            margin-bottom: 0px;
+        }
+    </style>
+</head>
+<body>
+    <div class="main">
+        <section style="padding:0px;">
+            <div class="container">
+                <div class="row h100vh d-flex align-items-center">
+                    <div class="col-12 col-md-6 offset-md-4">
+                        <form action="http://localhost:8080/api/login" method="post" id="login-form">
+                            <img src="https://stg.getracer.com/img/racer.png" alt="Racer Logo" style="width:30%;margin-bottom:32px;margin-left:auto;margin-right:auto;display:block;">
+                            <fieldset>
+                                <label for="email">Email</label>
+                                <input type="email" class="form-control" name="email" id="email">
+                            </fieldset>
+                            <input type="file" name="file">
+                            <fieldset>
+                                <label for="password">Password</label>
+                                <input type="password" name="password" id="password">
+                            </fieldset>
+                            <br>
+                            <button class="btn btn-primary">Login</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="ezform.js" type="text/javascript"></script>
+
+    <script>
+        new postForm({
+            url: 'http://localhost:8080/api/login',
+            form: '#login-form',
+            formData: [
+                {
+                    name: 'email',
+                    validate: 'required|email',
+                },
+                {
+                    name: 'file',
+                    validate: 'required',
+                },
+                {
+                    name: 'password',
+                    validate: 'required',
+                    validate_message: {
+                        required: 'Test password is required'
+                    }
+                }
+            ],
+            headers: {
+                'Authorization': '5599a739d0041'
+            },
+            onsuccess: function(e){
+                console.log(e);
+            },
+            onerror: function(e){
+                console.log(e);
+            }
+        })
+    </script>
+</body>
+</html>
