@@ -238,13 +238,13 @@ function postForm(ops)
        let _this = this;
 
        if( !ops ){
-           console.log('wfa form plugin: no options provided, init failed');
+           console.log('ezform: no options provided, init failed');
            return;
        }else if( !ops.hasOwnProperty('form')){
-           console.log('wfa form plugin: no form provided, init failed');
+           console.log('ezform: no form provided, init failed');
            return;
        }else if( !ops.hasOwnProperty('url') ){
-           console.log('wfa form plugin: no form url provided, init failed');
+           console.log('ezform: no form url provided, init failed');
            return;
        }
 
@@ -252,7 +252,7 @@ function postForm(ops)
        this.ops.url = ops.url;
 
        if( !this.ops.form ){
-           console.log('wfa form plugin: form not found, init failed');
+           console.log('ezform: form not found, init failed');
            return;
        }
 
