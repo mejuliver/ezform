@@ -21,10 +21,12 @@ function postForm(ops)
    this.data = function(){
        let _this = this;
 
-       let csrfToken = document.querySelector('meta[name="csrf-token"]') ? document.querySelector('meta[name="csrf-token"]').content : '';
-       csrfToken = this.ops.form.querySelector('_token') ? this.ops.form.querySelector('_token').value : csrfToken;
+       if( !this.ops.headers.hasOwnProperty('X-CSRF-TOKEN') || ( this.ops.headers.hasOwnProperty('X-CSRF-TOKEN') && this.ops.headers['X-CSRF-TOKEN'] == "" ) ){
+        let csrfToken = document.querySelector('meta[name="csrf-token"]') ? document.querySelector('meta[name="csrf-token"]').content : '';
+        csrfToken = this.ops.form.querySelector('input[name="_token"]') ? this.ops.form.querySelector('input[name="_token"]').value : csrfToken;
 
-       this.ops.headers['X-CSRF-TOKEN'] = csrfToken;
+        this.ops.headers['X-CSRF-TOKEN'] = csrfToken;
+       }
 
        let formData = {};
 
@@ -33,7 +35,7 @@ function postForm(ops)
        });
 
        return {
-           url: this.ops.url, 
+           url: this.ops.url,
            form: this.ops.form,
            formData: formData,
            isLoading: false,
@@ -83,15 +85,15 @@ function postForm(ops)
        ];
 
        let errors = [];
-       
+
        Object.keys(data).forEach(item=>{
            let items = data[item].split('|');
            let formData = _this.data().formData;
            let new_items = [];
-           
+
            items.forEach(i=>{
                let validate  = validator.find( e => e.name == i );
-           
+
                if( validate && !validate.action(formData[item]) ){
                    if( message[item+'.'+i] ){
                        new_items.push(message[item+'.'+i].replaceAll('{name}',item.replaceAll('_',' ').toLowerCase()));
@@ -108,7 +110,7 @@ function postForm(ops)
 
        return errors;
    };
-   
+
    this.events = function()
    {
        let _this = this;
@@ -122,7 +124,7 @@ function postForm(ops)
                if( _this.ops.notif ){
                    _this.notif('error',validate.join(', '));
                }
-   
+
                _this.ops.onerror(validate);
            }else{
 
@@ -136,7 +138,7 @@ function postForm(ops)
                    if( _this.ops.formData[item].getAttribute('type') == 'file' && _this.ops.formData[item].files.length > 0 ){
                        item_data = _this.ops.formData[item].files[0];
                    }
-                   
+
                    formData.append(item,item_data);
                });
 
@@ -155,11 +157,11 @@ function postForm(ops)
                        }
 
                        if( _this.ops.notif ) _this.notif('error',message);
-                   
+
                        _this.ops.onerror(res);
                    }else{
                        if( _this.ops.notif ) _this.notif('success',res.message);
-               
+
                        _this.ops.onsuccess(res);
                    }
                    _this.hideNotif();
@@ -281,7 +283,7 @@ function postForm(ops)
 
        if( ops.hasOwnProperty('headers') ){
            let headers = this.ops.headers;
-           this.ops.headers = {headers,...ops.headers};
+           this.ops.headers = {...headers,...ops.headers};
        }
 
        if( ops.hasOwnProperty('method') ){
