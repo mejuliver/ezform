@@ -121,8 +121,6 @@ function postForm(ops)
        this.data().form.addEventListener('submit',function(){
            event.preventDefault();
 
-            if( !_this.ops.beforeSubmit() ) return;
-
             let validate = _this.validate(_this.ops.validators.items,_this.ops.validators.messages);
 
             if( validate.length > 0 ){
@@ -132,6 +130,8 @@ function postForm(ops)
 
                 _this.ops.onError(validate);
             }else{
+
+                if( !_this.ops.beforeSubmit() ) return;
 
                 let formData = new FormData();
                 let data = _this.data();
@@ -256,7 +256,7 @@ function postForm(ops)
 
    this.reset = function(){
     let _this = this;
-    
+
     Object.keys(this.ops.formData).forEach(item=>{
        _this.ops.formData[item].value = '';
     });
