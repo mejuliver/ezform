@@ -14,8 +14,11 @@ function postForm(ops)
        method: 'POST',
        notif: true,
        notif_hide_time: 3,
-       onsuccess: function(){},
-       onerror: function(){},
+       beforeSubmit: function(){
+        return true;
+       },
+       onSuccess: async function(){},
+       onError: function(){},
    };
 
    this.data = function(){
@@ -118,74 +121,90 @@ function postForm(ops)
        this.data().form.addEventListener('submit',function(){
            event.preventDefault();
 
-           let validate = _this.validate(_this.ops.validators.items,_this.ops.validators.messages);
+            if( !_this.ops.beforeSubmit() ) return;
 
-           if( validate.length > 0 ){
-               if( _this.ops.notif ){
-                   _this.notif('error',validate.join(', '));
-               }
+            let validate = _this.validate(_this.ops.validators.items,_this.ops.validators.messages);
 
-               _this.ops.onerror(validate);
-           }else{
+            if( validate.length > 0 ){
+                if( _this.ops.notif ){
+                    _this.notif('error',validate.join(', '));
+                }
 
-               let formData = new FormData();
-               let data = _this.data();
-               let items = data.formData;
+                _this.ops.onError(validate);
+            }else{
 
-               Object.keys(items).forEach(item=>{
-                   let item_data = items[item];
+                let formData = new FormData();
+                let data = _this.data();
+                let items = data.formData;
 
-                   if( _this.ops.formData[item].getAttribute('type') == 'file' && _this.ops.formData[item].files.length > 0 ){
-                       item_data = _this.ops.formData[item].files[0];
-                   }
+                Object.keys(items).forEach(item=>{
+                    let item_data = items[item];
 
-                   formData.append(item,item_data);
-               });
+                    if( _this.ops.formData[item].getAttribute('type') == 'file' && _this.ops.formData[item].files.length > 0 ){
+                        item_data = _this.ops.formData[item].files[0];
+                    }
 
-               fetch(data.url,{
-                   method: data.method,
-                   body: formData,
-                   headers: data.headers
-               })
-               .then( res => res.json() )
-               .then( res =>{
-                   if( res.hasOwnProperty('success') && !res.success ){
-                       let message = res.message;
+                    formData.append(item,item_data);
+                });
 
-                       if( res.hasOwnProperty('errors') ){
-                           message = res.errors.join(',');
-                       }
+                fetch(data.url,{
+                    method: data.method,
+                    body: formData,
+                    headers: data.headers
+                })
+                .then( res => res.json() )
+                .then( res =>{
+                    let errors = [];
+                    let message = '';
 
-                       if( _this.ops.notif ) _this.notif('error',message);
+                    if( res.hasOwnProperty('errors') ){
+                        Object.keys(res.errors).forEach(item=>{
+                            errors.push(res.errors[item]);
+                        });
 
-                       _this.ops.onerror(res);
-                   }else{
-                       if( _this.ops.notif ) _this.notif('success',res.message);
+                        message = errors.join(', ');
 
-                       _this.ops.onsuccess(res);
-                   }
-                   _this.hideNotif();
-               })
-               .catch(err=>{
-                   let errors = [];
-                   let message = '';
+                        if( _this.ops.notif ) _this.notif('error',message);
 
-                   if( err.hasOwnProperty('errors') ){
-                       Object.keys(err.errors).forEach(item=>{
-                           errors.push(err.errors[item]);
-                       });
+                        _this.ops.onError(res);
+                    }else if( res.hasOwnProperty('success') && !res.success ){
+                        let message = res.message;
 
-                       message = errors.join(', ');
-                   }else{
-                       message = err.message;
-                   }
+                        if( res.hasOwnProperty('errors') ){
+                            message = res.errors.join(',');
+                        }
 
-                   if( _this.ops.notif ) _this.notif('error',message);
+                        if( _this.ops.notif ) _this.notif('error',message);
 
-                   _this.ops.onerror(err);
-                   _this.hideNotif();
-               });
-           }
+                        _this.ops.onError(res);
+                    }else{
+                        if( _this.ops.notif ) _this.notif('success',res.message);
+
+                        _this.ops.onSuccess(res);
+                    }
+
+                    _this.hideNotif();
+                })
+                .catch(err=>{
+                    let errors = [];
+                    let message = '';
+
+                    if( err.hasOwnProperty('errors') ){
+                        Object.keys(err.errors).forEach(item=>{
+                            errors.push(err.errors[item]);
+                        });
+
+                        message = errors.join(', ');
+                    }else{
+                        message = err.message;
+                    }
+
+                    if( _this.ops.notif ) _this.notif('error',message);
+
+                    _this.ops.onError(err);
+                    _this.hideNotif();
+                });
+            }
        });
    };
 
@@ -294,12 +313,16 @@ function postForm(ops)
            this.ops.notif = ops.notif;
        }
 
-       if( ops.hasOwnProperty('onsuccess') ){
-           this.ops.onsuccess = ops.onsuccess;
+        if( ops.hasOwnProperty('beforeSubmit') ){
+            this.ops.beforeSubmit = ops.beforeSubmit;
+        }
+
+       if( ops.hasOwnProperty('onSuccess') ){
+           this.ops.onSuccess = ops.onSuccess;
        }
 
-       if( ops.hasOwnProperty('onerror') ){
-           this.ops.onerror = ops.onerror;
+       if( ops.hasOwnProperty('onError') ){
+           this.ops.onError = ops.onError;
        }
 
        if( ops.hasOwnProperty('notif_hide_time') ){
