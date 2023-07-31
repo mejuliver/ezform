@@ -35,6 +35,7 @@ new postForm({
 });
 ```
 <br> 
+
 you can reset form values by calling `form.reset()` where form is your form instance e.g. `var form = new postForm({...})` 
 <br> 
 you can create many ezform instance as you needed
