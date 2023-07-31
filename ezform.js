@@ -255,6 +255,8 @@ function postForm(ops)
    };
 
    this.reset = function(){
+    let _this = this;
+    
     Object.keys(this.ops.formData).forEach(item=>{
        _this.ops.formData[item].value = '';
     });
