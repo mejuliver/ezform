@@ -71,6 +71,9 @@
             headers: {
                 'Authorization': '5599a739d0041'
             },
+            beforeSubmit: function(){
+                // acts as a middleware, return false to stop form submit
+            },
             onsuccess: function(e){
                 console.log(e);
             },
