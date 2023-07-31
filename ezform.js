@@ -233,6 +233,13 @@ function postForm(ops)
        }
    };
 
+   this.reset = function(){
+    Object.keys(this.ops.formData).forEach(item=>{
+       _this.ops.formData[item].value = '';
+    });
+
+   }
+
    this.init = function()
    {
        let _this = this;
