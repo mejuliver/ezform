@@ -22,10 +22,14 @@ new postForm({
     method: 'optional, default: POST, value: GET/POST/GET/PATCH/DELETE',
     notif: true, // optional, default: true, value: true/false,
     notif_hide_time: 3, // optional, default: 3 seconds, value: number of seconds before the notification will exit
-    onsuccess: function(){
+    beforeSubmit: function(){
+        // if return false then form event will be cancelled
+        // optional, default: true, value: true/false
+    },
+    onSuccess: function(){
         // optional, default: none, value: custom function that will be triggered after a success form submission
     },
-    onerror: function(){
+    onError: function(){
         // optional, default: none, value: custom function that will be triggered after a error form submission
     }
 });
