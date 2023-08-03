@@ -168,7 +168,7 @@ function postForm(ops)
 
                         _this.ops.onError(res);
                     }else if( res.hasOwnProperty('success') && !res.success ){
-                        let message = res.message;
+                        message = res.message;
 
                         if( res.hasOwnProperty('errors') ){
                             message = res.errors.join(',');
